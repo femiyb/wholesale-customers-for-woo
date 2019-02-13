@@ -4,7 +4,7 @@
  * Description: Allow wholesale pricing for WooCommerce.
  * Author: YooHoo Plugins
  * Author URI: https://yoohooplugins.com
- * Version: 1.0.4.1
+ * Version: 1.0.4.2
  * License: GPL2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: wholesale-customers-for-woo
@@ -12,6 +12,9 @@
  */
 
 /**
+ * 1.0.4.2 - 2017-11-09
+ * Bug Fix: Newsletter Optin form would not dismiss as expected
+ * 
  * 1.0.4.1 - 2017-11-08
  * Bug Fix: If variations had same price for min and max value, display only one price instead of variation price.
  * Enhancement: Subscribe to our newsletter prompt
@@ -217,7 +220,7 @@ add_action( 'woocommerce_product_options_pricing', 'wcs_cost_product_field' );
 function wcs_cost_save_product( $product_id ) {
  
      // stop the quick edit interferring as this will stop it saving properly, when a user uses quick edit feature
-    if ( isset($_POST['_inline_edit']) && wp_verify_nonce($_POST['_inline_edit'], 'inlineeditnonce' ) ) {
+    if ( wp_verify_nonce($_POST['_inline_edit'], 'inlineeditnonce' ) ) {
     	return;
     }
 
@@ -280,6 +283,7 @@ function wcs_save_variation_settings_fields( $post_id ) {
 add_action( 'woocommerce_save_product_variation', 'wcs_save_variation_settings_fields', 10, 1 );
 
 add_action( 'wp_ajax_wholesale_customers_woo_newsletter', 'wholesale_customers_woo_newsletter_callback' );
+add_action( 'wp_ajax_wcs_hide_subscription_notice', 'wholesale_customers_woo_newsletter_callback' );
 
 function wholesale_customers_woo_newsletter_callback(){
 
@@ -315,6 +319,14 @@ function wholesale_customers_woo_newsletter_callback(){
 
 	}
 
+	if( isset( $_POST['action'] ) && $_POST['action'] == 'wcs_hide_subscription_notice' ){
+
+		$user = wp_get_current_user();
+
+		update_user_meta( $user->ID, 'wholesale_customers_newsletter_popup', 1 );
+		
+	}
+
 	wp_die();
 
 }
@@ -325,7 +337,7 @@ function wholesale_customers_woo_admin_notices(){
 
 	$user = wp_get_current_user();
 
-	if( get_user_meta( $user->ID, 'wholesale_customers_newsletter_popup', true ) !== '1'){
+	if( get_user_meta( $user->ID, 'wholesale_customers_newsletter_popup', true ) !== '1' && current_user_can( 'manage_options' ) ){
     	?>
 	        <div class="notice notice-success  wll-update-notice-newsletter is-dismissible" >
 		        <h3><?php _e('Wholesale Customers for Woo', 'wholesale-customers-for-woo'); ?></h3>
@@ -345,3 +357,27 @@ function wholesale_customers_woo_admin_scripts(){
 	wp_enqueue_script( 'wholesale-customers-for-woo-admin-script', plugins_url( 'js/admin.js', __FILE__ ), array( 'jquery' ) );
 
 }
+
+// fix Wolesale Price column styling
+function custom_columns_head($defaults) {  
+
+   return array(
+		'cb' => '<input type="checkbox" />', // checkbox for bulk actions
+ 		'thumb' => '<span class="wc-image tips" data-tip="Image">Image</span>',
+		'name' => 'Name',
+		'date' => 'Date', // it is the last element by default, I inserted it third!
+		'sku' => 'SKU',
+		'is_in_stock' => 'Stock',
+		'price' => 'Price',
+		'wholesale_price' => 'Wholesale Price',
+		'product_cat' => 'Categories',
+		'featured' => '<span class="wc-featured parent-tips" data-tip="Featured">Featured</span>',
+	); 
+} 
+add_filter('manage_edit-product_columns', 'custom_columns_head');  
+?>
+<style type="text/css">
+	th#wholesale_price {
+    width: 10ch;
+}
+</style>

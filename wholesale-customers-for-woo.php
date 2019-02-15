@@ -5,7 +5,7 @@
  * Author: YooHoo Plugins
  * Author URI: https://yoohooplugins.com
  * Version: 1.0.4.2
- * Requires at least: 4.4
+ * Requires at least: 4.6
  * Tested up to: 5.0.3
  * WC requires at least: 3.0.0
  * WC tested up to: 3.5.4

@@ -5,6 +5,10 @@
  * Author: YooHoo Plugins
  * Author URI: https://yoohooplugins.com
  * Version: 1.0.4.2
+ * Requires at least: 4.4
+ * Tested up to: 5.0.3
+ * WC requires at least: 3.0.0
+ * WC tested up to: 3.5.4
  * License: GPL2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: wholesale-customers-for-woo
@@ -24,6 +28,8 @@ defined( 'ABSPATH' ) or exit;
 
 // include settings page.
 include( 'wholesale-customers-settings.php' );
+
+if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) { // Check if woocommerce is active
 
 function wcs_apply_wholesale_pricing( $price, $product ) {
 	global $current_user;
@@ -358,8 +364,19 @@ function wholesale_customers_woo_admin_scripts(){
 
 }
 
+
+// enqueue css
+add_action( 'admin_enqueue_scripts', 'wholesale_customers_woo_admin_styles' );
+
+function wholesale_customers_woo_admin_styles(){
+
+	    wp_register_style( 'custom-style', plugins_url( '/css/style.css', __FILE__ ));
+	    wp_enqueue_style( 'custom-style' );
+
+}
+
 // fix Wolesale Price column styling
-function custom_columns_head($defaults) {  
+function wholesale_customers_woo_custom_columns_head($defaults) {  
 
    return array(
 		'cb' => '<input type="checkbox" />', // checkbox for bulk actions
@@ -374,10 +391,19 @@ function custom_columns_head($defaults) {
 		'featured' => '<span class="wc-featured parent-tips" data-tip="Featured">Featured</span>',
 	); 
 } 
-add_filter('manage_edit-product_columns', 'custom_columns_head');  
-?>
-<style type="text/css">
-	th#wholesale_price {
-    width: 10ch;
+add_filter('manage_edit-product_columns', 'wholesale_customers_woo_custom_columns_head');
+
+} // Check if woocommerce is active
+
+else
+	{
+function wholesale_customers_woo_notice() {
+    ?>
+    <div class="error notice">
+    <p>Wholesale Customers For Woo requires the WooCommerce Plugin</p>
+    </div>
+    <?php
 }
-</style>
+
+add_action( 'admin_notices', 'wholesale_customers_woo_notice' );
+}

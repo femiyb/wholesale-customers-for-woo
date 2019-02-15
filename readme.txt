@@ -1,9 +1,9 @@
-﻿=== Wholesale Customers For WooCommerce ===
+=== Wholesale Customers For WooCommerce ===
 Contributors: andrewza, yoohooplugins, travislima
 Tags: woocommerce wholesale, wholesale plugin, wholesale prices, wholesale pricing, woocommerce wholesale pricing, woocommerce, wholesale
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4GC4JEZH7KSKL
 Requires at least: 4.6
-Tested up to: 4.8
+Tested up to: 5.0
 Requires PHP: 5.6
 Stable tag: trunk
 License: GPLv2 or later
@@ -91,6 +91,9 @@ If your product has a wholesale price set, this will overwrite the global discou
 4. WooCommerce Simple product wholesale pricing.
 
 == Changelog ==
+
+= 1.0.4.2 =
+* Bug Fix: Newsletter Optin form would not dismiss as expected
 
 = 1.0.4.1 =
 * Bug Fix: If variations had same price for min and max value, display only one price instead of variation price.
